@@ -1,10 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-
 import './app-home';
-
 import { Router } from '@vaadin/router';
-
 import '../components/header';
 
 @customElement('app-index')

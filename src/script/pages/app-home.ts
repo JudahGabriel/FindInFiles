@@ -1,82 +1,22 @@
-import { LitElement, css, html } from 'lit';
+import { css, html, CSSResult } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
+import { BootstrapBase } from '../common/bootstrap-base';
 
 @customElement('app-home')
-export class AppHome extends LitElement {
+export class AppHome extends BootstrapBase {
   // For more information on using properties and state in lit
   // check out this link https://lit.dev/docs/components/properties/
   @property() message = 'Welcome!';
 
   static get styles() {
-    return css`
-      #welcomeBar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-      }
-
-      #welcomeBar fluent-card {
-        margin-bottom: 12px;
-      }
-
-      #welcomeCard,
-      #infoCard {
-        padding: 18px;
-        padding-top: 0px;
-      }
-
-      pwa-install {
-        position: absolute;
-        bottom: 16px;
-        right: 16px;
-      }
-
-
-      #mainInfo fluent-anchor::part(control), #infoCard fluent-anchor::part(control) {
-        color: white;
-      }
-
-      @media (min-width: 1024px) {
-        #welcomeCard,
-        #infoCard {
-          width: 54%;
-        }
-      }
-
-      @media (screen-spanning: single-fold-vertical) {
-        #welcomeBar {
-          flex-direction: row;
-          align-items: flex-start;
-          justify-content: space-between;
-        }
-
-        #welcomeCard {
-          margin-right: 64px;
-        }
-      }
-
-      @media(prefers-color-scheme: light) {
-        fluent-card {
-          --fill-color: #edebe9;
-        }
-
-        #mainInfo fluent-anchor::part(control), #infoCard fluent-anchor::part(control) {
-          color: initial;
-        }
-      }
-
-      @media(prefers-color-scheme: dark) {
-        fluent-card {
-          --fill-color: #4e4e4e;
-          color: white;
-          border: none;
-        }
-      }
-    `;
+    const localStyles = css``;
+    return [
+      super.styles as CSSResult,
+      localStyles
+    ];
   }
 
   constructor() {
@@ -89,96 +29,75 @@ export class AppHome extends LitElement {
     console.log('This is your home page');
   }
 
-  share() {
-    if ((navigator as any).share) {
-      (navigator as any).share({
-        title: 'PWABuilder pwa-starter',
-        text: 'Check out the PWABuilder pwa-starter!',
-        url: 'https://github.com/pwa-builder/pwa-starter',
-      });
-    }
-  }
-
   render() {
     return html`
-      <app-header></app-header>
+      <div class="content" role="main">
+        <h1 class="display-1">Find In Files</h1>
+        <h3>
+          A utility for finding text content in your files
+        </h3>
 
-      <div>
-        <div id="welcomeBar">
-          <fluent-card id="welcomeCard">
-            <h2>${this.message}</h2>
+        <div class="card">
 
-            <p>
-              For more information on the PWABuilder pwa-starter, check out the
-              <fluent-anchor
-                href="https://github.com/pwa-builder/pwa-starter/wiki/Getting-Started
-                appearance="hypertext"
-                >Documentation on Github</fluent-anchor
-              >.
-            </p>
+          <div class="card-body">
+            <ol>
 
-            <p id="mainInfo">
-              Welcome to the
-              <fluent-anchor href="https://pwabuilder.com" appearance="hypertext"
-                >PWABuilder</fluent-anchor
-              >
-              pwa-starter! Be sure to head back to
-              <fluent-anchor href="https://pwabuilder.com" appearance="hypertext"
-                >PWABuilder</fluent-anchor
-              >
-              when you are ready to ship this PWA to the Microsoft Store, Google Play
-              and the Apple App Store!
-            </p>
-
-            ${'share' in navigator
-              ? html`<fluent-button appearance="primary" @click="${this.share}"
-                  >Share this Starter!</fluent-button
-                >`
-              : null}
-          </fluent-card>
-
-          <fluent-card id="infoCard">
-            <h2>Technology Used</h2>
-
-            <ul>
               <li>
-                <fluent-anchor
-                  href="https://www.typescriptlang.org/"
-                  appearance="hypertext"
-                  >TypeScript</fluent-anchor
-                >
+                <fast-button appearance="primary">Submit</fast-button>
+                <button type="button" id="chooseDirectoryBtn" class="btn btn-secondary">Choose a directory</button>
+                <p class="text-muted">
+                  <small>We'll search this directory and all its subdirectories recursively</small>
+                </p>
               </li>
 
               <li>
-                <fluent-anchor
-                  href="https://lit.dev"
-                  appearance="hypertext"
-                  >lit</fluent-anchor
-                >
+                <p>
+                  What string are you looking for? <input id="searchInput" class="form-control" type="text" placeholder="Type your search term">
+                </p>
               </li>
 
               <li>
-                <fluent-anchor
-                  href="https://docs.microsoft.com/en-us/fluent-ui/web-components/"
-                  appearance="hypertext"
-                  >Fluent Web Components</fluent-anchor
-                >
+                <p>
+                  Optionally narrow your search:
+                </p>
+                <div class="input-group mb-3">
+                  <span class="input-group-text">Max file size</span>
+                  <input id="maxSizeInput" type="number" min="0" max="100000" value="5" class="form-control" aria-label="Megabytes" style="max-width: 100px;">
+                  <span class="input-group-text">MB</span>
+                </div>
+                <div>
+                  <div class="input-group mb-3">
+                    <span class="input-group-text">Extensions</span>
+                    <input id="fileExtensionsInput" placeholder=".txt, .js, .ts" class="form-control" style="max-width: 100px;" value="*" />
+                  </div>
+                  <p class="form-text">
+                    Use * to search all files, or use comma-separated extension list, e.g. ".txt, .js, .ts"
+                  </p>
+                </div>
+
               </li>
 
               <li>
-                <fluent-anchor
-                  href="https://vaadin.github.io/vaadin-router/vaadin-router/demo/#vaadin-router-getting-started-demos"
-                  appearance="hypertext"
-                  >Vaadin Router</fluent-anchor
-                >
+                <button id="searchBtn" type="submit" class="btn btn-primary" disabled>Search</button>
               </li>
-            </ul>
-          </fluent-card>
 
-          <fluent-anchor href="/about" appearance="accent">Navigate to About</fluent-anchor>
+            </ol>
+            <div class="card-footer text-muted">
+              <div id="statusLabelSpinner" class="spinner-border" role="status" style="display: none;">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p id="statusLabel"></p>
+            </div>
+
+
+          </div>
         </div>
 
-        <pwa-install>Install PWA Starter</pwa-install>
+        <!-- Where we show search results -->
+        <div id="search-results" class="accordion">
+        </div>
+
+
       </div>
     `;
   }
