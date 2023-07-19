@@ -1,10 +1,10 @@
 {
-  "name": "PWA Starter",
+  "name": "Find in Files",
   "display": "standalone",
   "start_url": "/",
   "short_name": "starter",
   "theme_color": "#E1477E",
-  "description": "This is a PWA Starter app",
+  "description": "Simple app that lets you find text in your files. Works entirely locally, no server involved.",
   "orientation": "any",
   "background_color": "#E1477E",
   "related_applications": [],

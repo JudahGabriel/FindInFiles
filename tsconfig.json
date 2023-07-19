@@ -6,7 +6,7 @@
     "lib": [
       "esnext.array",
       "esnext",
-      "es2017",
+      "ES2021",
       "dom"
     ],
     "strict": true,

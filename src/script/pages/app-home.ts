@@ -17,6 +17,7 @@ export class AppHome extends BootstrapBase {
   @state() fileExtensions: string[] = [];
   @state() isSearching = false;
   @state() status = "";
+  @state() fileMatches = [];
 
   static get styles() {
     const localStyles = css``;
@@ -30,10 +31,7 @@ export class AppHome extends BootstrapBase {
     super();
   }
 
-  async firstUpdated() {
-    // this method is a lifecycle even in lit
-    // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-    console.log('This is your home page');
+  firstUpdated() {
   }
 
   render() {
@@ -186,10 +184,9 @@ export class AppHome extends BootstrapBase {
       return;
     }
 
-    const dirEntries = this.chosenDir.values();
     const directoriesToSearch = [this.chosenDir];
     while (directoriesToSearch.length > 0) {
-      const dir = directoriesToSearch.pop();
+      const dir = directoriesToSearch.pop()!;
       yield dir;
 
       // Go through all the contents of this directory
@@ -225,20 +222,22 @@ export class AppHome extends BootstrapBase {
     this.reset();
 
     if (this.query) {
-      this.setStatus("No search query. Type a query before searching.");
+      this.status = "No search query. Type a query before searching.";
+      return;
     }
 
-    this.setStatus(`Searching for '${this.query}' in files...`);
+    this.status = `Searching for '${this.query}' in files...`;
     this.isSearching = true;
     this.updateSearchEnabled();
 
     let searchedFileCount = 0;
     const files = await this.enumerateFiles();
     let fileEntry = await files.next();
-    let statusTextUpdateHandle = setInterval(() => this.setStatus(`Searching... ${this.fileMatches.length} matches in ${searchedFileCount} searched files.`), 250);
+    let statusTextUpdateHandle = setInterval(() => this.status = `Searching... ${this.fileMatches.length} matches in ${searchedFileCount} searched files.`, 250);
     while (!!fileEntry && !fileEntry.done) {
       try {
-        const file = await fileEntry.value.value.getFile();
+        const fileEntryValue = fileEntry.value;
+        const file = await (fileEntryValue.value as any).getFile();
         const matchesExtensions = this.fileNameMatchesExtensions(file.name);
         const isAcceptableSize = file.size <= this.maxFileSizeInBytes;
         if (matchesExtensions && isAcceptableSize) {
@@ -279,7 +278,7 @@ export class AppHome extends BootstrapBase {
 
   }
 
-  async readAllTextAsync(file) {
+  async readAllTextAsync(file: File): Promise<string> {
     // loadstart progress load abort error loadend
     return new Promise((resolve, reject) => {
 
@@ -288,8 +287,8 @@ export class AppHome extends BootstrapBase {
       }
 
       const fileReader = new FileReader();
-      fileReader.onload = () => resolve(fileReader.result);
-      fileReader.onerror = () => resolve(fileReader.error);
+      fileReader.onload = () => resolve(fileReader.result as string);
+      fileReader.onerror = () => reject(fileReader.error);
       fileReader.onabort = () => reject(fileReader.error);
       // onloadend fires whether error or success. When it fires, unhook us.
       fileReader.onloadend = () => {
