@@ -127,7 +127,7 @@ export class AppHome extends LitElement {
 
     renderPreviewer(): TemplateResult {
         return html`
-            <sl-drawer label="Drawer" class="drawer-overview">
+            <sl-drawer label="Preview" class="drawer-overview">
                 <pre class="text-preview">${this.previewText}</pre>
                 <sl-button class="close-btn" slot="footer" variant="primary" @click="${() => (this.shadowRoot?.querySelector("sl-drawer") as SlDrawer).hide()}">Close</sl-button>
             </sl-drawer>
